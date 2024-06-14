@@ -1,0 +1,38 @@
+import requests
+import pandas as pd
+import os
+
+# Replace 'YOUR_FRED_API_KEY' with your actual FRED API key
+fred_api_key = 'e916710d165717e6348556cdce8111f3'
+series_id_hpi = 'HPIPONM226S'  # FHFA House Price Index (National)
+
+# FRED API URL for HPI data
+url_hpi = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id_hpi}&api_key={fred_api_key}&file_type=json'
+
+# Fetch the data from the FRED API
+response_hpi = requests.get(url_hpi)
+data_hpi = response_hpi.json()
+
+# Print the JSON response for debugging
+print(f"Response for series {series_id_hpi}: {data_hpi}")
+
+# Extract data and convert to DataFrame
+if 'observations' in data_hpi:
+    observations_hpi = data_hpi['observations']
+    df_hpi = pd.DataFrame(observations_hpi)
+    df_hpi['date'] = pd.to_datetime(df_hpi['date'])
+    df_hpi.set_index('date', inplace=True)
+    # Handle non-numeric values in 'value' column
+    df_hpi['value'] = pd.to_numeric(df_hpi['value'], errors='coerce')
+else:
+    raise ValueError(f"'observations' key not found in the response for series {series_id_hpi}")
+
+# Display the DataFrame for recent months
+print("HPI Data (Recent Months):")
+print(df_hpi.tail())
+
+# Define the path where you want to save the file
+save_path = os.path.expanduser('C:/Users/ghkjs/pythonproject')
+
+# Save to CSV
+df_hpi.to_csv(os.path.join(save_path, 'hpi_data.csv'))

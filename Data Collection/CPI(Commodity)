@@ -1,0 +1,57 @@
+import requests
+import pandas as pd
+import os
+
+# Replace 'YOUR_FRED_API_KEY' with your actual FRED API key
+fred_api_key = 'e916710d165717e6348556cdce8111f3'
+
+# Series IDs for Commodity Price Indexes
+series_ids = {
+    'crude_oil': 'DCOILWTICO',  # Crude Oil Prices
+    'gold': 'GOLDAMGBD228NLBM', # Gold Prices
+    'agriculture': 'PPIACO',    # Agricultural Prices
+    'industrial': 'PPIIDC'      # Industrial Commodities Prices
+}
+
+def fetch_fred_data(series_id, api_key):
+    url = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id}&api_key={api_key}&file_type=json'
+    response = requests.get(url)
+    data = response.json()
+    
+    # Print the JSON response for debugging
+    print(f"Response for series {series_id}: {data}")
+    
+    # Check if 'observations' key is present
+    if 'observations' not in data:
+        raise ValueError(f"'observations' key not found in the response for series {series_id}")
+    
+    observations = data['observations']
+    df = pd.DataFrame(observations)
+    df['date'] = pd.to_datetime(df['date'])
+    df.set_index('date', inplace=True)
+    # Handle non-numeric values in 'value' column
+    df['value'] = pd.to_numeric(df['value'], errors='coerce')
+    return df
+
+# Fetch data for each series
+data_frames = {}
+for key, series_id in series_ids.items():
+    try:
+        df = fetch_fred_data(series_id, fred_api_key)
+        data_frames[key] = df
+    except ValueError as e:
+        print(e)
+
+# Display the DataFrames for recent months
+for key, df in data_frames.items():
+    if df is not None:
+        print(f"{key.capitalize()} Price Index Data (Recent Months):")
+        print(df.tail())
+
+# Define the path where you want to save the files
+save_path = os.path.expanduser('C:/Users/ghkjs/pythonproject')
+
+# Save to CSV if dataframes are not None
+for key, df in data_frames.items():
+    if df is not None:
+        df.to_csv(os.path.join(save_path, f'{key}_price_index_data.csv'))

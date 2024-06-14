@@ -1,0 +1,44 @@
+import requests
+import pandas as pd
+
+# Replace 'YOUR_FRED_API_KEY' with your actual FRED API key
+fred_api_key = 'e916710d165717e6348556cdce8111f3'
+
+# Series IDs
+series_ids = {
+    'nominal_gdp': 'GDP',      # Nominal GDP
+    'real_gdp': 'GDPC1',       # Real GDP
+    'gdp_deflator': 'GDPDEF'   # GDP Deflator
+}
+
+def fetch_fred_data(series_id, api_key):
+    url = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id}&api_key={api_key}&file_type=json'
+    response = requests.get(url)
+    data = response.json()
+    observations = data['observations']
+    df = pd.DataFrame(observations)
+    df['date'] = pd.to_datetime(df['date'])
+    df.set_index('date', inplace=True)
+    # Handle non-numeric values in 'value' column
+    df['value'] = pd.to_numeric(df['value'], errors='coerce')
+    return df
+
+# Fetch data for each series
+nominal_gdp_df = fetch_fred_data(series_ids['nominal_gdp'], fred_api_key)
+real_gdp_df = fetch_fred_data(series_ids['real_gdp'], fred_api_key)
+gdp_deflator_df = fetch_fred_data(series_ids['gdp_deflator'], fred_api_key)
+
+# Display the DataFrames
+print("Nominal GDP Data (Recent Months):")
+print(nominal_gdp_df.tail())
+
+print("Real GDP Data (Recent Months):")
+print(real_gdp_df.tail())
+
+print("GDP Deflator Data (Recent Months):")
+print(gdp_deflator_df.tail())
+
+# Save to CSV
+nominal_gdp_df.to_csv('nominal_gdp_data.csv')
+real_gdp_df.to_csv('real_gdp_data.csv')
+gdp_deflator_df.to_csv('gdp_deflator_data.csv')

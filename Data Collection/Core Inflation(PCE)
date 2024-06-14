@@ -1,0 +1,27 @@
+import requests
+import pandas as pd
+
+# Replace 'YOUR_FRED_API_KEY' with your actual FRED API key
+fred_api_key = 'e916710d165717e6348556cdce8111f3'
+series_id_pce = 'PCEPILFE'  # Core PCE: Personal Consumption Expenditures Excluding Food and Energy
+
+# FRED API URL for Core PCE data
+url_pce = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id_pce}&api_key={fred_api_key}&file_type=json'
+
+# Fetch the data from the FRED API
+response_pce = requests.get(url_pce)
+data_pce = response_pce.json()
+
+# Extract data and convert to DataFrame
+observations_pce = data_pce['observations']
+df_pce = pd.DataFrame(observations_pce)
+df_pce['date'] = pd.to_datetime(df_pce['date'])
+df_pce.set_index('date', inplace=True)
+df_pce['value'] = df_pce['value'].astype(float)
+
+# Display the DataFrame for recent months
+print("Core PCE Data (Recent Months):")
+print(df_pce.tail())
+
+# Save to CSV
+df_pce.to_csv('core_pce_data.csv')

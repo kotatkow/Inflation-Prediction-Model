@@ -1,0 +1,26 @@
+import requests
+import pandas as pd
+
+# Replace 'YOUR_FRED_API_KEY' with your actual FRED API key
+fred_api_key = 'e916710d165717e6348556cdce8111f3'
+series_id = 'PPIFGS'  # Example series ID for a seasonally adjusted PPI series
+
+# FRED API URL for PPI data
+url = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id}&api_key={fred_api_key}&file_type=json'
+
+# Fetch the data from the FRED API
+response = requests.get(url)
+data = response.json()
+
+# Extract data and convert to DataFrame
+observations = data['observations']
+df = pd.DataFrame(observations)
+df['date'] = pd.to_datetime(df['date'])
+df.set_index('date', inplace=True)
+df['value'] = df['value'].astype(float)
+
+# Display the DataFrame for recent months
+print(df.tail())
+
+# Save to CSV
+df.to_csv('seasonally_adjusted_ppi_data.csv')

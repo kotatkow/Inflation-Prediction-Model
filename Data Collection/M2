@@ -1,0 +1,38 @@
+import requests
+import pandas as pd
+import os
+
+# Replace 'YOUR_FRED_API_KEY' with your actual FRED API key
+fred_api_key = 'e916710d165717e6348556cdce8111f3'
+series_id_m2 = 'M2SL'  # M2 Money Stock
+
+# FRED API URL for M2 data
+url_m2 = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id_m2}&api_key={fred_api_key}&file_type=json'
+
+# Fetch the data from the FRED API
+response_m2 = requests.get(url_m2)
+data_m2 = response_m2.json()
+
+# Print the JSON response for debugging
+print(f"Response for series {series_id_m2}: {data_m2}")
+
+# Extract data and convert to DataFrame
+if 'observations' in data_m2:
+    observations_m2 = data_m2['observations']
+    df_m2 = pd.DataFrame(observations_m2)
+    df_m2['date'] = pd.to_datetime(df_m2['date'])
+    df_m2.set_index('date', inplace=True)
+    # Handle non-numeric values in 'value' column
+    df_m2['value'] = pd.to_numeric(df_m2['value'], errors='coerce')
+else:
+    raise ValueError(f"'observations' key not found in the response for series {series_id_m2}")
+
+# Display the DataFrame for recent months
+print("M2 Data (Recent Months):")
+print(df_m2.tail())
+
+# Define the path where you want to save the file
+save_path = os.path.expanduser('C:/Users/ghkjs/pythonproject')
+
+# Save to CSV
+df_m2.to_csv(os.path.join(save_path, 'm2_data.csv'))

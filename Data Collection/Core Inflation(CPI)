@@ -1,0 +1,27 @@
+import requests
+import pandas as pd
+
+# Replace 'YOUR_FRED_API_KEY' with your actual FRED API key
+fred_api_key = 'e916710d165717e6348556cdce8111f3'
+series_id_cpi = 'CPILFESL'  # Core CPI: All Items Less Food & Energy
+
+# FRED API URL for Core CPI data
+url_cpi = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id_cpi}&api_key={fred_api_key}&file_type=json'
+
+# Fetch the data from the FRED API
+response_cpi = requests.get(url_cpi)
+data_cpi = response_cpi.json()
+
+# Extract data and convert to DataFrame
+observations_cpi = data_cpi['observations']
+df_cpi = pd.DataFrame(observations_cpi)
+df_cpi['date'] = pd.to_datetime(df_cpi['date'])
+df_cpi.set_index('date', inplace=True)
+df_cpi['value'] = df_cpi['value'].astype(float)
+
+# Display the DataFrame for recent months
+print("Core CPI Data (Recent Months):")
+print(df_cpi.tail())
+
+# Save to CSV
+df_cpi.to_csv('core_cpi_data.csv')

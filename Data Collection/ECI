@@ -1,0 +1,68 @@
+import requests
+import pandas as pd
+import os
+
+# Replace 'YOUR_FRED_API_KEY' with your actual FRED API key
+fred_api_key = 'e916710d165717e6348556cdce8111f3'
+
+# Series IDs for ECI (using valid example IDs)
+series_ids = {
+    'total_compensation': 'ECIPRIV',  # Total compensation for private industry workers
+    'wages_salaries': 'ECIWAG',       # Wages and salaries for private industry workers
+    'benefits': 'ECIBEN'              # Benefits for private industry workers
+}
+
+def fetch_fred_data(series_id, api_key):
+    url = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id}&api_key={api_key}&file_type=json'
+    response = requests.get(url)
+    data = response.json()
+    
+    # Print the JSON response for debugging
+    print(f"Response for series {series_id}: {data}")
+    
+    # Check if 'observations' key is present
+    if 'observations' not in data:
+        raise ValueError(f"'observations' key not found in the response for series {series_id}")
+    
+    observations = data['observations']
+    df = pd.DataFrame(observations)
+    df['date'] = pd.to_datetime(df['date'])
+    df.set_index('date', inplace=True)
+    # Handle non-numeric values in 'value' column
+    df['value'] = pd.to_numeric(df['value'], errors='coerce')
+    return df
+
+# Fetch data for each series
+try:
+    total_compensation_df = fetch_fred_data(series_ids['total_compensation'], fred_api_key)
+    wages_salaries_df = fetch_fred_data(series_ids['wages_salaries'], fred_api_key)
+    benefits_df = fetch_fred_data(series_ids['benefits'], fred_api_key)
+except ValueError as e:
+    print(e)
+    total_compensation_df, wages_salaries_df, benefits_df = None, None, None
+
+# Display the DataFrames if they are successfully fetched
+if total_compensation_df is not None:
+    print("Total Compensation ECI Data (Recent Months):")
+    print(total_compensation_df.tail())
+
+if wages_salaries_df is not None:
+    print("Wages and Salaries ECI Data (Recent Months):")
+    print(wages_salaries_df.tail())
+
+if benefits_df is not None:
+    print("Benefits ECI Data (Recent Months):")
+    print(benefits_df.tail())
+
+# Define the path where you want to save the files
+save_path = os.path.expanduser('~/Downloads')
+
+# Save to CSV if dataframes are not None
+if total_compensation_df is not None:
+    total_compensation_df.to_csv(os.path.join(save_path, 'eci_total_compensation.csv'))
+
+if wages_salaries_df is not None:
+    wages_salaries_df.to_csv(os.path.join(save_path, 'eci_wages_salaries.csv'))
+
+if benefits_df is not None:
+    benefits_df.to_csv(os.path.join(save_path, 'eci_benefits.csv'))

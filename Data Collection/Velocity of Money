@@ -1,0 +1,49 @@
+import requests
+import pandas as pd
+import os
+
+# Replace 'YOUR_FRED_API_KEY' with your actual FRED API key
+fred_api_key = 'e916710d165717e6348556cdce8111f3'
+
+# Series IDs for Nominal GDP and M2 Money Stock
+series_ids = {
+    'nominal_gdp': 'GDP',    # Nominal GDP
+    'm2': 'M2SL'             # M2 Money Stock
+}
+
+def fetch_fred_data(series_id, api_key):
+    url = f'https://api.stlouisfed.org/fred/series/observations?series_id={series_id}&api_key={api_key}&file_type=json'
+    response = requests.get(url)
+    data = response.json()
+    
+    # Check if 'observations' key is present
+    if 'observations' not in data:
+        raise ValueError(f"'observations' key not found in the response for series {series_id}")
+    
+    observations = data['observations']
+    df = pd.DataFrame(observations)
+    df['date'] = pd.to_datetime(df['date'])
+    df.set_index('date', inplace=True)
+    # Handle non-numeric values in 'value' column
+    df['value'] = pd.to_numeric(df['value'], errors='coerce')
+    return df
+
+# Fetch data for Nominal GDP and M2 Money Stock
+nominal_gdp_df = fetch_fred_data(series_ids['nominal_gdp'], fred_api_key)
+m2_df = fetch_fred_data(series_ids['m2'], fred_api_key)
+
+# Merge the two DataFrames on the date index
+merged_df = nominal_gdp_df.join(m2_df, lsuffix='_gdp', rsuffix='_m2', how='inner')
+
+# Calculate the Velocity of Money
+merged_df['velocity'] = merged_df['value_gdp'] / merged_df['value_m2']
+
+# Display the DataFrame for recent months
+print("Velocity of Money (Recent Months):")
+print(merged_df.tail())
+
+# Define the path where you want to save the file
+save_path = os.path.expanduser('C:/Users/ghkjs/pythonproject')
+
+# Save to CSV
+merged_df.to_csv(os.path.join(save_path, 'velocity_of_money.csv'))
