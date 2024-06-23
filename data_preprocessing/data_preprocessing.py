@@ -68,6 +68,7 @@ crude_oil_price_index_data['seasonally_adjusted'] = seasonal_adjustment(crude_oi
 gdp_deflator_data['seasonally_adjusted'] = seasonal_adjustment(gdp_deflator_data,'value')
 hpi_data['seasonally_adjusted'] = seasonal_adjustment(hpi_data, 'value')
 industrial_price_index['seasonally_adjusted'] = seasonal_adjustment(industrial_price_index, 'value')
+nominal_gdp_data['seasonally_adjusted'] = seasonal_adjustment(nominal_gdp_data, 'value')
 m2_data['seasonally_adjusted'] = seasonal_adjustment(m2_data, 'value')
 pce_data['seasonally_adjusted'] = seasonal_adjustment(pce_data, 'value')
 ppi_data['seasonally_adjusted'] = seasonal_adjustment(ppi_data, 'value')
