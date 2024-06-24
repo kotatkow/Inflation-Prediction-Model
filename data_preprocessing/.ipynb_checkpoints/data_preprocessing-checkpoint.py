@@ -97,73 +97,39 @@ real_gdp_data['diff'] = apply_differencing(real_gdp_data, 'seasonally_adjusted')
 
 # Percentage change
 def calculate_percentage_change(data, column):
-    return data[column].pct_change() * 100
+    return data[column].pct_change()*100
 
 cpi_data['pct_change'] = calculate_percentage_change(cpi_data, 'diff')
-agriculture_price_index_data['pct_change'] = calculate_percentage_change(agriculture_price_index_data, 'diff')
-core_cpi_data['pct_change'] = calculate_percentage_change(core_cpi_data, 'diff')
-core_pce_data['pct_change'] = calculate_percentage_change(core_pce_data, 'diff')
-crude_oil_price_index_data['pct_change'] = calculate_percentage_change(crude_oil_price_index_data, 'diff')
-gdp_deflator_data['pct_change'] = calculate_percentage_change(gdp_deflator_data, 'diff')
-hpi_data['pct_change'] = calculate_percentage_change(hpi_data, 'diff')
-industrial_price_index['pct_change'] = calculate_percentage_change(industrial_price_index, 'diff')
-nominal_gdp_data['pct_change'] = calculate_percentage_change(nominal_gdp_data, 'diff')
-m2_data['pct_change'] = calculate_percentage_change(m2_data, 'diff')
-pce_data['pct_cahnge'] = calculate_percentage_change(pce_data, 'diff')
-ppi_data['pct_change'] = calculate_percentage_change(ppi_data, 'diff')
-real_gdp_data['pct_change'] = calculate_percentage_change(real_gdp_data, 'diff')
+agriculture
+ppi_data['pct_change'] = calculate-percentage_change(ppi_data, 'diff')
 
-#Drop Nan values
-cpi_data.dropna(inplace=True)
-agriculture_price_index_data.dropna(inplace=True)
-core_cpi_data.dropna(inplace=True)
-core_pce_data.dropna(inplace=True)
-crude_oil_price_index_data.dropna(inplace=True)
-gdp_deflator_data.dropna(inplace=True)
-hpi_data.dropna(inplace=True)
-industrial_price_index.dropna(inplace=True)
-nominal_gdp_data.dropna(inplace=True)
-m2_data.dropna(inplace=True)
-pce_data.dropna(inplace=True)
-ppi_data.dropna(inplace=True)
-real_gdp_data.dropna(inplace=True)
-interest_rates_data.dropna(inplace=True)
-pce_percentage_change.dropna(inplace=True)
-seasonally_adjusted_ppi_data.dropna(inplace=True)
-velocity_of_money.dropna(inplace=True)
 
-# Normalization
-scaler = MinMaxScaler()
 
-cpi_data['CPI_pct_scaled'] = scaler.fit_transform(cpi_data[['pct_change']])
-agriculture_price_index_data['Agriculture_pct_scaled'] = scaler.fit_transform(agriculture_price_index_data[['pct_change']])
 
-# Feature engineering (lagged features)
-def create_lag_features(data, column, lags):
-    for lag in range(1, lags + 1):
-        data[f'{column}_lag_{lag}'] = data[column].shift(lag)
-    return data
 
-cpi_data = create_lag_features(cpi_data, 'CPI_pct_scaled', 3)
-agriculture_price_index_data = create_lag_features(agriculture_price_index_data, 'Agriculture_pct_scaled', 3)
 
-# Drop NaN values created by lagging
-cpi_data.dropna(inplace=True)
-agriculture_price_index_data.dropna(inplace=True)
 
-# Merge datasets
-merged_data = cpi_data[['CPI_pct_scaled']].join([
-    agriculture_price_index_data[['Agriculture_pct_scaled']],
-], how='inner')
 
-# Add lag features from all datasets
-for lag in range(1, 4):
-    merged_data[f'CPI_pct_scaled_lag_{lag}'] = cpi_data[f'CPI_pct_scaled_lag_{lag}']
-    merged_data[f'Agriculture_pct_scaled_lag_{lag}'] = agriculture_price_index_data[
-        f'Agriculture_pct_scaled_lag_{lag}'
-    ]
 
-    merged_data.dropna(inplace=True)
 
-    # Display the merged dataset
-    print(merged_data.head())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
