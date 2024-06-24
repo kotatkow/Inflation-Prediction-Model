@@ -92,3 +92,4 @@ merged_data.dropna(inplace=True)
 
 # Display the merged dataset
 print(merged_data.head())
+merged_data.to_csv('merged_data.csv', index=True)
