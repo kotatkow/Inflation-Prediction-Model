@@ -73,3 +73,14 @@ m2_data['seasonally_adjusted'] = seasonal_adjustment(m2_data, 'value')
 pce_data['seasonally_adjusted'] = seasonal_adjustment(pce_data, 'value')
 ppi_data['seasonally_adjusted'] = seasonal_adjustment(ppi_data, 'value')
 real_gdp_data['seasonaly_adjusted'] = seasonal_adjustment(real_gdp_data, 'value')
+
+# Differencing
+def apply_differencing(data, column):
+    return data[column].diff().dropna()
+
+economic_data_to_drop_for_differencing = [interest_rates_data, pce_percentage_change,
+                                          seasonally_adjusted_ppi_data, velocity_of_money]
+
+for element[i] in economic_data:
+    if element[i] not in economic_data_to_drop_for_differencing:
+        element['diff'] = apply_differencing(element[i], f''element[i]'_seasonally_adjusted')
