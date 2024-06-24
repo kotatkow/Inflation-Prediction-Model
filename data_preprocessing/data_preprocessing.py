@@ -72,7 +72,7 @@ nominal_gdp_data['seasonally_adjusted'] = seasonal_adjustment(nominal_gdp_data, 
 m2_data['seasonally_adjusted'] = seasonal_adjustment(m2_data, 'value')
 pce_data['seasonally_adjusted'] = seasonal_adjustment(pce_data, 'value')
 ppi_data['seasonally_adjusted'] = seasonal_adjustment(ppi_data, 'value')
-real_gdp_data['seasonaly_adjusted'] = seasonal_adjustment(real_gdp_data, 'value')
+real_gdp_data['seasonally_adjusted'] = seasonal_adjustment(real_gdp_data, 'value')
 
 # Differencing
 def apply_differencing(data, column):
@@ -81,6 +81,16 @@ def apply_differencing(data, column):
 economic_data_to_drop_for_differencing = [interest_rates_data, pce_percentage_change,
                                           seasonally_adjusted_ppi_data, velocity_of_money]
 
-for element[i] in economic_data:
-    if element[i] not in economic_data_to_drop_for_differencing:
-        element['diff'] = apply_differencing(element[i], f''element[i]'_seasonally_adjusted')
+cpi_data['diff'] = apply_differencing(cpi_data, 'seasonally_adjusted')
+agriculture_price_index_data['diff'] = apply_differencing(agriculture_price_index_data, 'seasonally_adjusted')
+core_cpi_data['diff'] = apply_differencing(core_cpi_data, 'seasonally_adjusted')
+core_pce_data['diff'] = apply_differencing(core_pce_data, 'seasonally_adjusted')
+crude_oil_price_index_data['diff'] = apply_differencing(crude_oil_price_index_data, 'seasonally_adjusted')
+gdp_deflator_data['diff'] = apply_differencing(gdp_deflator_data, 'seasonally_adjusted')
+hpi_data['diff'] = apply_differencing(hpi_data, 'seasonally_adjusted')
+industrial_price_index['diff'] = apply_differencing(industrial_price_index, 'seasonally_adjusted')
+nominal_gdp_data['diff'] = apply_differencing(nominal_gdp_data, 'seasonally_adjusted')
+m2_data['diff'] = apply_differencing(m2_data, 'seasonally_adjusted')
+pce_data['diff'] = apply_differencing(pce_data, 'seasonally_adjusted')
+ppi_data['diff'] = apply_differencing(ppi_data, 'seasonally_adjusted')
+real_gdp_data['diff'] = apply_differencing(real_gdp_data, 'seasonally_adjusted')
